@@ -1,17 +1,11 @@
 package ppl.pl.tower.domain.Controller;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
-import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
-import ppl.pl.tower.domain.Model.Aircraft;
 import ppl.pl.tower.domain.Model.AircraftAndCode;
-import ppl.pl.tower.domain.Model.FiledNameAndSortDirection;
 import ppl.pl.tower.domain.Services.AircraftService;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/aircraft/")

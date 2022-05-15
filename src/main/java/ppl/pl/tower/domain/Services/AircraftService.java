@@ -1,6 +1,5 @@
 package ppl.pl.tower.domain.Services;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
@@ -10,7 +9,6 @@ import ppl.pl.tower.domain.Mapper.CodeMapper;
 import ppl.pl.tower.domain.Model.*;
 import ppl.pl.tower.domain.Repository.AircraftRepo;
 import ppl.pl.tower.domain.Repository.CodeRepo;
-import org.modelmapper.ModelMapper;
 
 import java.util.List;
 import java.util.Optional;
