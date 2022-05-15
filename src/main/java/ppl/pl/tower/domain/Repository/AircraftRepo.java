@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Model.Aircraft;
 
 import java.util.List;

@@ -29,7 +29,7 @@ public class WebController {
     }
 
     @GetMapping(value = "/v1/sorted-by-model-name/")
-    public List<Aircraft> getAllAircraftSortedByModelName(@RequestParam String searchString, @RequestParam(defaultValue = "model_name") String orderBy) {
+    public List<AircraftDTO> getAllAircraftSortedByModelName(@RequestParam String searchString, @RequestParam(defaultValue = "model_name") String orderBy) {
         return aircraftService.getAllAircraftSortedByModelName(searchString, orderBy);
     }
 

@@ -10,12 +10,11 @@ import ppl.pl.tower.domain.Mapper.CodeMapper;
 import ppl.pl.tower.domain.Model.*;
 import ppl.pl.tower.domain.Repository.AircraftRepo;
 import ppl.pl.tower.domain.Repository.CodeRepo;
+import org.modelmapper.ModelMapper;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AircraftService {
@@ -99,7 +98,7 @@ public class AircraftService {
         }
     }
 
-    public List<Aircraft> getAllAircraftSortedByModelName(String searchString, String orderBy) {
-        return aircraftRepo.searchAircraftByModelName(searchString, orderBy);
+    public List<AircraftDTO> getAllAircraftSortedByModelName(String searchString, String orderBy) {
+        return  aircraftRepo.searchAircraftByModelName(searchString, orderBy).stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft)).collect(Collectors.toList());
     }
 }
