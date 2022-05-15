@@ -2,6 +2,7 @@ package ppl.pl.tower.domain.Services;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
 import ppl.pl.tower.domain.Exceptions.StringToLongException;
 import ppl.pl.tower.domain.Mapper.AircraftMapper;
@@ -13,6 +14,7 @@ import ppl.pl.tower.domain.Repository.CodeRepo;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -29,8 +31,14 @@ public class AircraftService {
         this.codeMapper = codeMapper;
     }
 
-    public Optional<Aircraft> getAircraftById(Long id) {
-        return aircraftRepo.findById(id);
+    public AircraftDTO getAircraftById(Long id) {
+        Optional<Aircraft> aircraft = aircraftRepo.findById(id);
+
+        if (aircraft.isPresent()) {
+            return aircraftMapper.mapToAircraftDTO(aircraft.get());
+        } else {
+            throw new AircraftNotFoundException("Aircraft: " + id + " not found");
+        }
     }
 
     public void create(AircraftAndCode aircraftAndCode) {
@@ -83,7 +91,12 @@ public class AircraftService {
     }
 
     public void remove(Long id) {
-        aircraftRepo.deleteById(id);
+        Optional<Aircraft> aircraft = aircraftRepo.findById(id);
+        if (aircraft.isPresent()) {
+            aircraftRepo.deleteById(id);
+        } else {
+            throw new AircraftNotFoundException("Using remove " + id + " Aircraft not Found");
+        }
     }
 
     public List<Aircraft> getAllAircraftSortedByModelName(String searchString, String orderBy) {
