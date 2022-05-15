@@ -1,19 +1,18 @@
 package ppl.pl.tower.domain.Services;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
 import ppl.pl.tower.domain.Exceptions.StringToLongException;
 import ppl.pl.tower.domain.Mapper.AircraftMapper;
 import ppl.pl.tower.domain.Mapper.CodeMapper;
-import ppl.pl.tower.domain.Model.Aircraft;
-import ppl.pl.tower.domain.Model.AircraftAndCode;
-import ppl.pl.tower.domain.Model.Code;
-import ppl.pl.tower.domain.Model.EngineType;
+import ppl.pl.tower.domain.Model.*;
 import ppl.pl.tower.domain.Repository.AircraftRepo;
 import ppl.pl.tower.domain.Repository.CodeRepo;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -85,5 +84,9 @@ public class AircraftService {
 
     public void remove(Long id) {
         aircraftRepo.deleteById(id);
+    }
+
+    public List<Aircraft> getAllAircraftSortedByModelName(String searchString, String orderBy) {
+        return aircraftRepo.searchAircraftByModelName(searchString, orderBy);
     }
 }

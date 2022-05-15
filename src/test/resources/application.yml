@@ -1,16 +1,21 @@
+logging:
+  level:
+    org:
+    hibernate:
+      sql=debug
+      type:
+      descriptor:
+        sql:trace
+server:
+  port: 8081
 spring:
+  datasource:
+    password: postgres
+    url: "jdbc:postgresql://localhost:5432/towerdbTest"
+    username: postgres
   jpa:
     hibernate:
       ddl-auto: validate
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/towerdbTest
-    username: postgres
-    password: postgres
-
-
+    show_sql: true
   liquibase:
-    change-log: classpath:/liquibase/changelog-master-test.xml
-
-server:
-  port : 8081
+    change-log: "classpath:/liquibase/changelog-master-test.xml"

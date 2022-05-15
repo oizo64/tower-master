@@ -73,7 +73,7 @@ class AircraftServiceTest {
         // Remove
         Optional<Aircraft> aircraftRemoveFirst = aircraftRepo.findById(airId);
         aircraftRepo.deleteById(aircraftRemoveFirst.get().getId());
-        Optional<Aircraft> aircraftRemoveSecond = aircraftRepo.findByManufacturer("testManufacturer");
+        Optional<Aircraft> aircraftRemoveSecond = aircraftRepo.findById(airId);
         assertThat(aircraftRemoveSecond.isEmpty()).isTrue();
         assertThat(aircraftRemoveSecond.isPresent()).isFalse();
     }

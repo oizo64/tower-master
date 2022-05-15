@@ -15,7 +15,10 @@ import javax.persistence.*;
  *
  */
 @Entity
-@Table
+@Table(name = "Aircraft")
+@NamedQueries({
+        @NamedQuery(name = "Aircraft.findByModelNameIgnoreCaseOrderByModelNameAsc", query = "select a from Aircraft a where upper(a.modelName) = upper(:modelName) order by a.modelName")
+})
 @Getter
 @Setter
 public class Aircraft {

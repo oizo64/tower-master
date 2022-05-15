@@ -1,11 +1,14 @@
 package ppl.pl.tower.domain.Controller;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
 import ppl.pl.tower.domain.Model.Aircraft;
 import ppl.pl.tower.domain.Model.AircraftAndCode;
+import ppl.pl.tower.domain.Model.FiledNameAndSortDirection;
 import ppl.pl.tower.domain.Services.AircraftService;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,7 +24,10 @@ public class WebController {
     public Optional<Aircraft> getAircraftById(@PathVariable("id") Long id) {
         return Optional.ofNullable(aircraftService.getAircraftById(id).orElseThrow(() -> new AircraftNotFoundException(id + " Aircraft not found.")));
     }
-
+    @GetMapping(value = "/api/aircrafts/sorted-by-model-name/")
+    public List<Aircraft> getAllAircraftSortedByModelName(@RequestParam String searchString, @RequestParam(defaultValue = "model_name") String orderBy ) {
+        return aircraftService.getAllAircraftSortedByModelName(searchString, orderBy);
+    }
     @PostMapping(value = "/api/aircraft/")
     public void addAircraft(@RequestBody AircraftAndCode aircraftAndCode) {
         aircraftService.create(aircraftAndCode);

@@ -1,8 +1,12 @@
 spring:
   jpa:
+    show_sql: true
     hibernate:
       ddl-auto: validate
-
+      format_sql: true
+    properties:
+      hibernate:
+        sql=true
   datasource:
     url: jdbc:postgresql://localhost:5432/towerdb
     username: postgres
@@ -14,3 +18,15 @@ spring:
 
 server:
   port : 8081
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL:
+          TRACE
+        type:
+          descriptor:
+            sql:
+              BasicBinder:
+                TRACE
