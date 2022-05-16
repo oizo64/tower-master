@@ -1,8 +1,11 @@
 package ppl.pl.tower.domain.Controller;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Model.AircraftAndCode;
+import ppl.pl.tower.domain.Model.AircraftColumnName;
+import ppl.pl.tower.domain.Model.SearchOperation;
 import ppl.pl.tower.domain.Services.AircraftService;
 
 import java.util.List;
@@ -23,8 +26,8 @@ public class WebController {
     }
 
     @GetMapping(value = "/v1/sorted-by-model-name/")
-    public List<AircraftDTO> getAllAircraftSortedByModelName(@RequestParam String searchString, @RequestParam(defaultValue = "model_name") String orderBy) {
-        return aircraftService.getAllAircraftSortedByModelName(searchString, orderBy);
+    public List<AircraftDTO> getAllAircraftSortedByModelName(@RequestParam AircraftColumnName aircraftColumnName, @RequestParam String searchString, @RequestParam SearchOperation searchOperation, @RequestParam Sort.Direction direction, @RequestParam AircraftColumnName sortBy) {
+        return aircraftService.getAllAircraftSortedByModelName(aircraftColumnName, searchString, searchOperation, direction, sortBy);
     }
 
     @PostMapping(value = "/v1/")
