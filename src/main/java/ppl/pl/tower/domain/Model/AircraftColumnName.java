@@ -6,6 +6,5 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
 
 public enum AircraftColumnName {
-    ID, MODEL_NAME, MANUFACTURER
-//    , ENGINE_TYPE, CODE_IATA, CODE_ICAO,
+    ID, MODEL_NAME, MANUFACTURER, ENGINE_TYPE, CODE_IATA, CODE_ICAO,
 }

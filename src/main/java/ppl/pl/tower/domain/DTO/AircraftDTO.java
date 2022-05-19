@@ -6,7 +6,7 @@ import ppl.pl.tower.domain.Model.Code;
 @Data
 public class AircraftDTO {
 //    private Long id;
-//    private Code code;
+    private Code code;
     private String modelName;
     private String manufacturer;
     private EngineType engineType;

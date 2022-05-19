@@ -1,6 +1,7 @@
 package ppl.pl.tower.domain.Services;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
@@ -12,6 +13,7 @@ import ppl.pl.tower.domain.Repository.AircraftRepo;
 import ppl.pl.tower.domain.Repository.CodeRepo;
 import ppl.pl.tower.domain.Specification.AircraftSpecification;
 
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,30 +102,33 @@ public class AircraftService {
 
     public List<AircraftDTO> getAllAircraftSortedByModelName(AircraftColumnName aircraftColumnName, String searchString, SearchOperation searchOperation, Sort.Direction direction, AircraftColumnName sortBy) {
         AircraftSpecification aircraftSpecification = new AircraftSpecification();
-        aircraftSpecification.add(new SearchCriteria(convertAircraftEnumToString(aircraftColumnName), searchString, searchOperation));
-        List<Aircraft> aircrafts = aircraftRepo.findAll(aircraftSpecification,Sort.by(direction, convertAircraftEnumToString(sortBy)));
-        return aircrafts.stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft)).collect(Collectors.toList());
-
-//        return  aircraftRepo.searchAircraftByModelName(searchString, orderBy).stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft)).collect(Collectors.toList());
+        aircraftSpecification.add(new SearchCriteria(aircraftColumnName, searchString, searchOperation));
+        return aircraftRepo.findAll(aircraftSpecification, Sort.by(direction, convertAircraftEnumToString(sortBy)))
+                .stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft))
+                .collect(Collectors.toList());
     }
-    private String convertAircraftEnumToString (AircraftColumnName aircraftColumnName){
+
+    private String convertAircraftEnumToString(AircraftColumnName aircraftColumnName) {
         String temporaryColumnName = new String();
         if (aircraftColumnName.equals(AircraftColumnName.ID)) {
             temporaryColumnName = "id";
-        }
-//        else if (aircraftColumnName.equals(AircraftColumnName.CODE_IATA)) {
-//            temporaryColumnName = "iata_code";
-//        } else if (aircraftColumnName.equals(AircraftColumnName.CODE_ICAO)) {
-//            temporaryColumnName = "icao_code";
-//        }
-        else if (aircraftColumnName.equals(AircraftColumnName.MODEL_NAME)) {
+        } else if (aircraftColumnName.equals(AircraftColumnName.CODE_IATA)) {
+            temporaryColumnName = "iata_code";
+        } else if (aircraftColumnName.equals(AircraftColumnName.CODE_ICAO)) {
+            temporaryColumnName = "icao_code";
+        } else if (aircraftColumnName.equals(AircraftColumnName.MODEL_NAME)) {
             temporaryColumnName = "modelName";
         } else if (aircraftColumnName.equals(AircraftColumnName.MANUFACTURER)) {
             temporaryColumnName = "manufacturer";
+        } else if (aircraftColumnName.equals(AircraftColumnName.ENGINE_TYPE)) {
+            temporaryColumnName = "engineType";
         }
-//        else if (aircraftColumnName.equals(AircraftColumnName.ENGINE_TYPE)) {
-//            temporaryColumnName = "engineType";
-//        }
-        return  temporaryColumnName;
+        return temporaryColumnName;
+    }
+
+
+    public List<Aircraft> getAircraftByCodeIata(String string) {
+        List<Aircraft> list = aircraftRepo.findAll(AircraftSpecification.getAircraftByCode(string));
+        return list;
     }
 }

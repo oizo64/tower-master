@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SearchCriteria {
-    private String aircraftColumnName;
+    private AircraftColumnName aircraftColumnName;
     private Object value;
     private SearchOperation operation;
 }

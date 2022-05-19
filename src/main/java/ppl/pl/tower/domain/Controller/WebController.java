@@ -3,6 +3,7 @@ package ppl.pl.tower.domain.Controller;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
+import ppl.pl.tower.domain.Model.Aircraft;
 import ppl.pl.tower.domain.Model.AircraftAndCode;
 import ppl.pl.tower.domain.Model.AircraftColumnName;
 import ppl.pl.tower.domain.Model.SearchOperation;
@@ -26,7 +27,11 @@ public class WebController {
     }
 
     @GetMapping(value = "/v1/sorted-by-model-name/")
-    public List<AircraftDTO> getAllAircraftSortedByModelName(@RequestParam AircraftColumnName aircraftColumnName, @RequestParam String searchString, @RequestParam SearchOperation searchOperation, @RequestParam Sort.Direction direction, @RequestParam AircraftColumnName sortBy) {
+    public List<AircraftDTO> getAllAircraftSortedByModelName(@RequestParam AircraftColumnName aircraftColumnName,
+                                                             @RequestParam String searchString,
+                                                             @RequestParam SearchOperation searchOperation,
+                                                             @RequestParam Sort.Direction direction,
+                                                             @RequestParam AircraftColumnName sortBy) {
         return aircraftService.getAllAircraftSortedByModelName(aircraftColumnName, searchString, searchOperation, direction, sortBy);
     }
 
@@ -43,5 +48,11 @@ public class WebController {
     @DeleteMapping(value = "/v1/{id}")
     public void removeCarById(@PathVariable("id") Long id) {
         aircraftService.remove(id);
+    }
+
+
+    @GetMapping(value = "/v1/test/")
+    public List<Aircraft> getAircraftByCodeIata(@RequestParam String string) {
+        return aircraftService.getAircraftByCodeIata(string);
     }
 }
