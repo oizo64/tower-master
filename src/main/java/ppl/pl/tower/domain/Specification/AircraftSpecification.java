@@ -1,10 +1,9 @@
 package ppl.pl.tower.domain.Specification;
 
 import org.springframework.data.jpa.domain.Specification;
-import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
+import ppl.pl.tower.domain.Exceptions.SearchCriteriaNotMatch;
 import ppl.pl.tower.domain.Model.*;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +94,7 @@ public class AircraftSpecification implements Specification<Aircraft> {
                                     root.get(criteria.getAircraftColumnName().toString().toLowerCase(Locale.ROOT))
                             ).in(criteria.getValue()));
                 } else {
-                    throw new AircraftNotFoundException("Search criteria not match");
+                    throw new SearchCriteriaNotMatch("Search criteria not match");
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
@@ -140,32 +139,24 @@ public class AircraftSpecification implements Specification<Aircraft> {
                     predicates.add(
                             criteriaBuilder.not(aircraftCodeJoin.get(tempColumnName)).in(criteria.getValue()));
                 } else {
-                    throw new AircraftNotFoundException("Search criteria not match");
+                    throw new SearchCriteriaNotMatch("Search criteria not match");
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
             if (criteria.getAircraftColumnName().equals(AircraftColumnName.ENGINE_TYPE)) {
-                EngineType engineType = null;
-                switch(criteria.getValue().toString()) {
-                    case "JET":
-                        engineType = EngineType.JET;
-                        break;
-                    case "TURBOPROP":
-                        engineType = EngineType.TURBOPROP;
-                        break;
-                    default:
-                        throw new AircraftNotFoundException("Search criteria not match");
-                }
-                if (criteria.getOperation().equals(SearchOperation.EQUAL) && engineType != null) {
+                EngineType engineType = switch (criteria.getValue().toString()) {
+                    case "JET" -> EngineType.JET;
+                    case "TURBOPROP" -> EngineType.TURBOPROP;
+                    default -> throw new SearchCriteriaNotMatch("Search criteria not match");
+                };
+                if (criteria.getOperation().equals(SearchOperation.EQUAL)) {
                     predicates.add(
                             criteriaBuilder.equal(root.get(Aircraft_.ENGINE_TYPE), engineType));
-                } else {
-
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         }
-        return null;
+        throw new SearchCriteriaNotMatch("Search criteria not match");
     }
 
     public static Specification<Aircraft> getAircraftByCode(String iataString) {

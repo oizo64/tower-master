@@ -30,4 +30,15 @@ public class GlobalExceptionHandler {
                         .withErrorCode("String:001")
                         .build(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(SearchCriteriaNotMatch.class)
+    public ResponseEntity<ErrorDTO> handlerSearchCriteriaNotMatchException(final SearchCriteriaNotMatch ex){
+        return new ResponseEntity<>(
+                ErrorDTO.builder()
+                        .withTitle("Invalid search criteria input")
+                        .withDetails(ex.getMessage())
+                        .withStatus(HttpStatus.BAD_REQUEST.value())
+                        .withErrorType(SearchCriteriaNotMatch.class.getSimpleName())
+                        .withErrorCode("SearchCriteria:001")
+                        .build(), HttpStatus.BAD_REQUEST);
+    }
 }
