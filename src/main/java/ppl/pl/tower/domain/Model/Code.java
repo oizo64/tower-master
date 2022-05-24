@@ -13,8 +13,6 @@ public class Code {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "iata_code")
     private String iata;
-    @Column(name = "icao_code")
     private String icao;
 }

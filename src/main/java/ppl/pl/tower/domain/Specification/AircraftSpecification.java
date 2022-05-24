@@ -25,8 +25,8 @@ public class AircraftSpecification implements Specification<Aircraft> {
     @Override
     public Predicate toPredicate(Root<Aircraft> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
-        for (SearchCriteria criteria : searchCriteriaList) {
 
+        for (SearchCriteria criteria : searchCriteriaList) {
             if (criteria.getAircraftColumnName().equals(AircraftColumnName.ID) ||
                     criteria.getAircraftColumnName().equals(AircraftColumnName.MODEL_NAME) ||
                     criteria.getAircraftColumnName().equals(AircraftColumnName.MANUFACTURER)) {
@@ -98,46 +98,47 @@ public class AircraftSpecification implements Specification<Aircraft> {
                 }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
-            if (criteria.getAircraftColumnName().equals(AircraftColumnName.CODE_IATA) ||
-                    criteria.getAircraftColumnName().equals(AircraftColumnName.CODE_ICAO)) {
-                String tempColumnName = "";
-                if (criteria.getAircraftColumnName().equals(AircraftColumnName.CODE_IATA)) tempColumnName = Code_.IATA;
-                if (criteria.getAircraftColumnName().equals(AircraftColumnName.CODE_ICAO)) tempColumnName = Code_.ICAO;
+
+            if (criteria.getAircraftColumnName().equals(AircraftColumnName.IATA) ||
+                    criteria.getAircraftColumnName().equals(AircraftColumnName.ICAO)) {
                 Join<Aircraft, Code> aircraftCodeJoin = root.join(Aircraft_.code);
+
+
+
                 if (criteria.getOperation().equals(SearchOperation.GREATER_THAN)) {
                     predicates.add(
-                            criteriaBuilder.greaterThan(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString()));
+                            criteriaBuilder.greaterThan(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.LESS_THAN)) {
                     predicates.add(
-                            criteriaBuilder.lessThan(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString()));
+                            criteriaBuilder.lessThan(aircraftCodeJoin.get(criteria.getAircraftColumnName().label), criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.GREATER_THAN_EQUAL)) {
                     predicates.add(
-                            criteriaBuilder.greaterThanOrEqualTo(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString()));
+                            criteriaBuilder.greaterThanOrEqualTo(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.LESS_THAN_EQUAL)) {
                     predicates.add(
-                            criteriaBuilder.lessThanOrEqualTo(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString()));
+                            criteriaBuilder.lessThanOrEqualTo(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.NOT_EQUAL)) {
                     predicates.add(
-                            criteriaBuilder.notEqual(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString()));
+                            criteriaBuilder.notEqual(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.EQUAL)) {
                     predicates.add(
-                            criteriaBuilder.equal(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString()));
+                            criteriaBuilder.equal(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
                     predicates.add(
-                            criteriaBuilder.like(aircraftCodeJoin.get(tempColumnName), "%" + criteria.getValue().toString().toLowerCase() + "%"));
+                            criteriaBuilder.like(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), "%" + criteria.getValue().toString() + "%"));
                 } else if (criteria.getOperation().equals(SearchOperation.MATCH_END)) {
                     predicates.add(
-                            criteriaBuilder.like(aircraftCodeJoin.get(tempColumnName), criteria.getValue().toString().toLowerCase() + "%"));
+                            criteriaBuilder.like(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), criteria.getValue().toString() + "%"));
                 } else if (criteria.getOperation().equals(SearchOperation.MATCH_START)) {
                     predicates.add
-                            (criteriaBuilder.like(aircraftCodeJoin.get(tempColumnName), "%" + criteria.getValue().toString().toLowerCase()));
+                            (criteriaBuilder.like(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT)), "%" + criteria.getValue().toString()));
                 } else if (criteria.getOperation().equals(SearchOperation.IN)) {
                     predicates.add(
-                            criteriaBuilder.in(aircraftCodeJoin.get(tempColumnName)).value(criteria.getValue())
+                            criteriaBuilder.in(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT))).value(criteria.getValue())
                     );
                 } else if (criteria.getOperation().equals(SearchOperation.NOT_IN)) {
                     predicates.add(
-                            criteriaBuilder.not(aircraftCodeJoin.get(tempColumnName)).in(criteria.getValue()));
+                            criteriaBuilder.not(aircraftCodeJoin.get(criteria.getAircraftColumnName().label.toLowerCase(Locale.ROOT))).in(criteria.getValue()));
                 } else {
                     throw new SearchCriteriaNotMatch("Search criteria not match");
                 }
@@ -157,12 +158,5 @@ public class AircraftSpecification implements Specification<Aircraft> {
             }
         }
         throw new SearchCriteriaNotMatch("Search criteria not match");
-    }
-
-    public static Specification<Aircraft> getAircraftByCode(String iataString) {
-        return (root, query, criteriaBuilder) -> {
-            Join<Aircraft, Code> codeListJoin = root.join(Aircraft_.code);
-            return criteriaBuilder.like(codeListJoin.get(Code_.IATA), "%" + iataString + "%");
-        };
     }
 }

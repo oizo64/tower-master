@@ -12,21 +12,22 @@ import ppl.pl.tower.domain.Services.AircraftService;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/aircraft/")
-public class WebController {
+@RequestMapping(value = "/api/v1/aircraft/")
+public class AircraftController {
     private final AircraftService aircraftService;
 
-    public WebController(AircraftService aircraftService) {
+    public AircraftController(AircraftService aircraftService) {
         this.aircraftService = aircraftService;
     }
 
 
-    @GetMapping(value = "/v1/{id}")
+    @GetMapping(value = "/{id}")
     public AircraftDTO getAircraftById(@PathVariable("id") Long id) {
         return aircraftService.getAircraftById(id);
     }
 
-    @GetMapping(value = "/v1/sorted-by-model-name/")
+    // dodac pagowanie
+    @GetMapping(value = "/sorted-by-model-name/")
     public List<AircraftDTO> getAllAircraftSortedByModelName(@RequestParam AircraftColumnName aircraftColumnName,
                                                              @RequestParam String searchString,
                                                              @RequestParam SearchOperation searchOperation,
@@ -35,24 +36,19 @@ public class WebController {
         return aircraftService.getAllAircraftSortedByModelName(aircraftColumnName, searchString, searchOperation, direction, sortBy);
     }
 
-    @PostMapping(value = "/v1/")
+    @PostMapping(value = "/")
     public void addAircraft(@RequestBody AircraftAndCode aircraftAndCode) {
         aircraftService.create(aircraftAndCode);
     }
 
-    @PutMapping(value = "/v1/{id}")
+    @PutMapping(value = "/{id}")
     public void updateCarById(@PathVariable("id") Long id, @RequestBody AircraftAndCode aircraftAndCode) {
         aircraftService.update(aircraftAndCode, id);
     }
 
-    @DeleteMapping(value = "/v1/{id}")
+    @DeleteMapping(value = "/{id}")
     public void removeCarById(@PathVariable("id") Long id) {
         aircraftService.remove(id);
     }
 
-
-    @GetMapping(value = "/v1/test/")
-    public List<Aircraft> getAircraftByCodeIata(@RequestParam String string) {
-        return aircraftService.getAircraftByCodeIata(string);
-    }
 }

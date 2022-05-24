@@ -22,14 +22,11 @@ import java.util.stream.Collectors;
 public class AircraftService {
     private final AircraftRepo aircraftRepo;
     private final AircraftMapper aircraftMapper;
-    private final CodeRepo codeRepo;
-    private final CodeMapper codeMapper;
 
-    public AircraftService(AircraftRepo aircraftRepo, AircraftMapper aircraftMapper, CodeRepo codeRepo, CodeMapper codeMapper) {
+
+    public AircraftService(AircraftRepo aircraftRepo, AircraftMapper aircraftMapper) {
         this.aircraftRepo = aircraftRepo;
         this.aircraftMapper = aircraftMapper;
-        this.codeRepo = codeRepo;
-        this.codeMapper = codeMapper;
     }
 
     public AircraftDTO getAircraftById(Long id) {
@@ -44,10 +41,8 @@ public class AircraftService {
 
     public void create(AircraftAndCode aircraftAndCode) {
         if (checkLengthOfString(aircraftAndCode)) {
-            Aircraft aircraft = aircraftMapper.mapToAircraft(aircraftAndCode.getAircraftDTO());
-            aircraftRepo.save(aircraft);
+            aircraftRepo.save(aircraftMapper.mapToAircraft(aircraftAndCode.getAircraftDTO()));
         }
-
     }
 
     private boolean checkLengthOfString(AircraftAndCode aircraftAndCode) {
@@ -65,70 +60,37 @@ public class AircraftService {
     }
 
     public void update(AircraftAndCode aircraftAndCode, Long id) {
-        if (checkLengthOfString(aircraftAndCode)) {
-            Optional<Aircraft> aircraft = aircraftRepo.findById(id);
-            if (aircraft.isPresent()) {
-                if (aircraftAndCode.getAircraftDTO().getModelName() != null) {
-                    aircraft.get().setModelName(aircraftAndCode.getAircraftDTO().getModelName());
-                }
-                if (aircraftAndCode.getAircraftDTO().getManufacturer() != null) {
-                    aircraft.get().setManufacturer(aircraftAndCode.getAircraftDTO().getManufacturer());
-                }
-                if (aircraftAndCode.getAircraftDTO().getEngineType() != null) {
-                    aircraft.get().setEngineType(aircraftAndCode.getAircraftDTO().getEngineType());
-                }
-                if (aircraftAndCode.getCodeDTO().getIata() != null) {
-                    aircraft.get().getCode().setIata(aircraftAndCode.getCodeDTO().getIata());
-                }
-                if (aircraftAndCode.getCodeDTO().getIcao() != null) {
-                    aircraft.get().getCode().setIcao(aircraftAndCode.getCodeDTO().getIcao());
-                }
-                aircraftRepo.save(aircraft.get());
-            } else {
-                throw new AircraftNotFoundException("Using update " + id + " Aircraft not Found");
+        Aircraft aircraft = aircraftRepo.findById(id).orElseThrow(() -> new AircraftNotFoundException("Using remove " + id + " Aircraft not Found"));
+        if (aircraft.getId() != null && checkLengthOfString(aircraftAndCode)) {
+            if (aircraftAndCode.getAircraftDTO().getModelName() != null) {
+                aircraft.setModelName(aircraftAndCode.getAircraftDTO().getModelName());
             }
-
+            if (aircraftAndCode.getAircraftDTO().getManufacturer() != null) {
+                aircraft.setManufacturer(aircraftAndCode.getAircraftDTO().getManufacturer());
+            }
+            if (aircraftAndCode.getAircraftDTO().getEngineType() != null) {
+                aircraft.setEngineType(aircraftAndCode.getAircraftDTO().getEngineType());
+            }
+            if (aircraftAndCode.getCodeDTO().getIata() != null) {
+                aircraft.getCode().setIata(aircraftAndCode.getCodeDTO().getIata());
+            }
+            if (aircraftAndCode.getCodeDTO().getIcao() != null) {
+                aircraft.getCode().setIcao(aircraftAndCode.getCodeDTO().getIcao());
+            }
+            aircraftRepo.save(aircraft);
         }
     }
 
     public void remove(Long id) {
-        Optional<Aircraft> aircraft = aircraftRepo.findById(id);
-        if (aircraft.isPresent()) {
-            aircraftRepo.deleteById(id);
-        } else {
-            throw new AircraftNotFoundException("Using remove " + id + " Aircraft not Found");
-        }
+        aircraftRepo.findById(id).orElseThrow(() -> new AircraftNotFoundException("Using remove " + id + " Aircraft not Found"));
+        aircraftRepo.deleteById(id);
     }
 
     public List<AircraftDTO> getAllAircraftSortedByModelName(AircraftColumnName aircraftColumnName, String searchString, SearchOperation searchOperation, Sort.Direction direction, AircraftColumnName sortBy) {
         AircraftSpecification aircraftSpecification = new AircraftSpecification();
         aircraftSpecification.add(new SearchCriteria(aircraftColumnName, searchString, searchOperation));
-        return aircraftRepo.findAll(aircraftSpecification, Sort.by(direction, convertAircraftEnumToString(sortBy)))
+        return aircraftRepo.findAll(aircraftSpecification, Sort.by(direction, sortBy.label))
                 .stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft))
                 .collect(Collectors.toList());
-    }
-
-    private String convertAircraftEnumToString(AircraftColumnName aircraftColumnName) {
-        String temporaryColumnName = new String();
-        if (aircraftColumnName.equals(AircraftColumnName.ID)) {
-            temporaryColumnName = "id";
-        } else if (aircraftColumnName.equals(AircraftColumnName.CODE_IATA)) {
-            temporaryColumnName = "iata_code";
-        } else if (aircraftColumnName.equals(AircraftColumnName.CODE_ICAO)) {
-            temporaryColumnName = "icao_code";
-        } else if (aircraftColumnName.equals(AircraftColumnName.MODEL_NAME)) {
-            temporaryColumnName = "modelName";
-        } else if (aircraftColumnName.equals(AircraftColumnName.MANUFACTURER)) {
-            temporaryColumnName = "manufacturer";
-        } else if (aircraftColumnName.equals(AircraftColumnName.ENGINE_TYPE)) {
-            temporaryColumnName = "engineType";
-        }
-        return temporaryColumnName;
-    }
-
-
-    public List<Aircraft> getAircraftByCodeIata(String string) {
-        List<Aircraft> list = aircraftRepo.findAll(AircraftSpecification.getAircraftByCode(string));
-        return list;
     }
 }
