@@ -1,5 +1,7 @@
 package ppl.pl.tower.domain.Controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
@@ -32,8 +34,10 @@ public class AircraftController {
                                                              @RequestParam String searchString,
                                                              @RequestParam SearchOperation searchOperation,
                                                              @RequestParam Sort.Direction direction,
-                                                             @RequestParam AircraftColumnName sortBy) {
-        return aircraftService.getAllAircraftSortedByModelName(aircraftColumnName, searchString, searchOperation, direction, sortBy);
+                                                             @RequestParam AircraftColumnName sortBy,
+                                                             @RequestParam("page") int page,
+                                                             @RequestParam("size") int size) {
+        return aircraftService.getAllAircraftSorted(aircraftColumnName, searchString, searchOperation, direction, sortBy, page, size);
     }
 
     @PostMapping(value = "/")

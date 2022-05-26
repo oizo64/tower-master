@@ -1,19 +1,17 @@
 package ppl.pl.tower.domain.Services;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
 import ppl.pl.tower.domain.Exceptions.StringToLongException;
 import ppl.pl.tower.domain.Mapper.AircraftMapper;
-import ppl.pl.tower.domain.Mapper.CodeMapper;
 import ppl.pl.tower.domain.Model.*;
 import ppl.pl.tower.domain.Repository.AircraftRepo;
-import ppl.pl.tower.domain.Repository.CodeRepo;
 import ppl.pl.tower.domain.Specification.AircraftSpecification;
 
-import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +44,7 @@ public class AircraftService {
     }
 
     private boolean checkLengthOfString(AircraftAndCode aircraftAndCode) {
-        Integer columnLength = 255;
+        int columnLength = 255;
         if (aircraftAndCode.getAircraftDTO().getModelName().length() > columnLength ||
                 aircraftAndCode.getAircraftDTO().getManufacturer().length() > columnLength ||
                 aircraftAndCode.getAircraftDTO().getEngineType().toString().length() > columnLength ||
@@ -86,8 +84,9 @@ public class AircraftService {
         aircraftRepo.deleteById(id);
     }
 
-    public List<AircraftDTO> getAllAircraftSortedByModelName(AircraftColumnName aircraftColumnName, String searchString, SearchOperation searchOperation, Sort.Direction direction, AircraftColumnName sortBy) {
+    public List<AircraftDTO> getAllAircraftSorted(AircraftColumnName aircraftColumnName, String searchString, SearchOperation searchOperation, Sort.Direction direction, AircraftColumnName sortBy, int page, int size) {
         AircraftSpecification aircraftSpecification = new AircraftSpecification();
+        Pageable pageable = PageRequest.of(page,size);
         aircraftSpecification.add(new SearchCriteria(aircraftColumnName, searchString, searchOperation));
         return aircraftRepo.findAll(aircraftSpecification, Sort.by(direction, sortBy.label))
                 .stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft))
