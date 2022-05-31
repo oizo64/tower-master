@@ -25,8 +25,10 @@ public class Aircraft {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne(cascade = CascadeType.ALL)
     private Code code;
+
     private String modelName;
     private String manufacturer;
     @Enumerated(EnumType.STRING)

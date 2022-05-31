@@ -55,4 +55,10 @@ public class AircraftController {
         aircraftService.remove(id);
     }
 
+    @PostMapping(value = "/kafka")
+    public void addAircraftByKafka(@RequestBody AircraftAndCode aircraftAndCode) {
+        aircraftService.createByKafka(aircraftAndCode);
+    }
+
+
 }

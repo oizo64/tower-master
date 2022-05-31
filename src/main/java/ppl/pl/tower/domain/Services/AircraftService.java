@@ -1,15 +1,19 @@
 package ppl.pl.tower.domain.Services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ppl.pl.tower.domain.DTO.AircraftDTO;
 import ppl.pl.tower.domain.Exceptions.AircraftNotFoundException;
 import ppl.pl.tower.domain.Exceptions.StringToLongException;
 import ppl.pl.tower.domain.Mapper.AircraftMapper;
 import ppl.pl.tower.domain.Model.*;
+import ppl.pl.tower.domain.Mapper.CodeMapper;
 import ppl.pl.tower.domain.Repository.AircraftRepo;
+import ppl.pl.tower.domain.Repository.CodeRepo;
 import ppl.pl.tower.domain.Specification.AircraftSpecification;
 
 import java.util.List;
@@ -20,11 +24,17 @@ import java.util.stream.Collectors;
 public class AircraftService {
     private final AircraftRepo aircraftRepo;
     private final AircraftMapper aircraftMapper;
+    private KafkaTemplate<String, AircraftAndCode> kafkaTemplate;
+    private final CodeRepo codeRepo;
+    private final CodeMapper codeMapper;
 
 
-    public AircraftService(AircraftRepo aircraftRepo, AircraftMapper aircraftMapper) {
+    public AircraftService(AircraftRepo aircraftRepo, AircraftMapper aircraftMapper, KafkaTemplate<String, AircraftAndCode> kafkaTemplate, CodeRepo codeRepo, CodeMapper codeMapper) {
         this.aircraftRepo = aircraftRepo;
         this.aircraftMapper = aircraftMapper;
+        this.kafkaTemplate = kafkaTemplate;
+        this.codeRepo = codeRepo;
+        this.codeMapper = codeMapper;
     }
 
     public AircraftDTO getAircraftById(Long id) {
@@ -39,7 +49,10 @@ public class AircraftService {
 
     public void create(AircraftAndCode aircraftAndCode) {
         if (checkLengthOfString(aircraftAndCode)) {
-            aircraftRepo.save(aircraftMapper.mapToAircraft(aircraftAndCode.getAircraftDTO()));
+            Code code = codeMapper.mapToCode(aircraftAndCode.getCodeDTO());
+            Aircraft aircraft = aircraftMapper.mapToAircraft(aircraftAndCode.getAircraftDTO());
+            aircraft.setCode(code);
+            aircraftRepo.save(aircraft);
         }
     }
 
@@ -91,5 +104,15 @@ public class AircraftService {
         return aircraftRepo.findAll(aircraftSpecification, Sort.by(direction, sortBy.label))
                 .stream().map(aircraft -> aircraftMapper.mapToAircraftDTO(aircraft))
                 .collect(Collectors.toList());
+    }
+
+    public void createByKafka(AircraftAndCode aircraftAndCode) {
+        kafkaTemplate.send("AircraftTopic",aircraftAndCode);
+    }
+
+    public void writeFromKafka(String data) {
+        ObjectMapper mapper = new ObjectMapper();
+
+
     }
 }

@@ -30,3 +30,5 @@ logging:
             sql:
               BasicBinder:
                 TRACE
+kafka:
+  bootstrap.servers: localhost:9092
